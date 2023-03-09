@@ -20,10 +20,13 @@ public class Operation {
     private UUID id;
 
     @Column(name = "type", nullable = false)
-    private String operationType;
+    private String type;
 
     @Column(name = "cost", nullable = false)
     private double cost;
+
+    @Column(name = "status", nullable = false)
+    private OperationStatus status;
 
     @Embedded
     private Audit audit = new Audit();

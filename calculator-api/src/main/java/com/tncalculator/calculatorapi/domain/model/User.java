@@ -1,5 +1,6 @@
 package com.tncalculator.calculatorapi.domain.model;
 
+import com.tncalculator.calculatorapi.security.Roles;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class User implements UserDetails {
     @Id
     @Column(name = "user_id")
     @GeneratedValue
-    private UUID userId;
+    private UUID id;
 
     @Column(name = "username", nullable = false, updatable = false)
     private String username;
@@ -39,6 +40,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Authority> authorities;
+
+    @Transient
+    private List<Roles> roles;
 
     @Embedded
     private Audit audit = new Audit();

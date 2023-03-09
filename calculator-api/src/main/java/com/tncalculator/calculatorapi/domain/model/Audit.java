@@ -41,7 +41,7 @@ public class Audit {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getDetails();
         createdAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
-        createdBy = user.getUserId();
+        createdBy = user.getId();
         deleted = false;
     }
 
@@ -50,14 +50,14 @@ public class Audit {
         updatedAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getDetails();
-        updatedBy = user.getUserId();
+        updatedBy = user.getId();
     }
 
     public void onDelete() {
         updatedAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getDetails();
-        updatedBy = user.getUserId();
+        updatedBy = user.getId();
         deleted = true;
     }
 }
