@@ -39,7 +39,7 @@ public class Audit {
     @PrePersist
     public void prePersist() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getDetails();
+        User user = (User) authentication.getPrincipal();
         createdAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         createdBy = user.getId();
         deleted = false;
@@ -49,14 +49,14 @@ public class Audit {
     public void preUpdate() {
         updatedAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getDetails();
+        User user = (User) authentication.getPrincipal();
         updatedBy = user.getId();
     }
 
     public void onDelete() {
         updatedAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getDetails();
+        User user = (User) authentication.getPrincipal();
         updatedBy = user.getId();
         deleted = true;
     }

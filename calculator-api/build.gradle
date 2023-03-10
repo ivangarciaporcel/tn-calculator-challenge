@@ -19,9 +19,11 @@ repositories {
 }
 
 ext {
+    guavaVersion = '31.1-jre'
     lombokVersion = '1.18.26'
     mapStructVersion = '1.5.3.Final'
-    guavaVersion = '31.1-jre'
+    testContainersVersion = '1.17.6'
+    testContainersPostgresqlVersion = '1.17.6'
 }
 
 dependencies {
@@ -32,6 +34,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.flywaydb:flyway-core'
     implementation "com.google.guava:guava:$guavaVersion"
+    testImplementation 'org.projectlombok:lombok:1.18.22'
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     compileOnly "org.mapstruct:mapstruct:$mapStructVersion"
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
@@ -40,6 +43,9 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.testcontainers:testcontainers:$testContainersVersion"
+    testImplementation "org.testcontainers:postgresql:$testContainersPostgresqlVersion"
+    runtimeOnly 'org.postgresql:postgresql:42.3.6'
 }
 
 tasks.named('test') {

@@ -1,7 +1,6 @@
 package com.tncalculator.calculatorapi.repository;
 
 import com.tncalculator.calculatorapi.domain.model.Operation;
-import com.tncalculator.calculatorapi.domain.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
