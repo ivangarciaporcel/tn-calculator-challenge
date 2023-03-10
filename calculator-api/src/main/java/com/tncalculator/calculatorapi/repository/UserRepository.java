@@ -1,6 +1,7 @@
 package com.tncalculator.calculatorapi.repository;
 
 import com.tncalculator.calculatorapi.domain.model.User;
+import com.tncalculator.calculatorapi.domain.model.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,7 @@ public interface UserRepository extends BaseRepository<User, UUID> {
 
     @Query("SELECT u FROM User u WHERE u.audit.deleted = false")
     Page<User> listNotDeleted(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.username = :username and u.userStatus = :userStatus and u.audit.deleted = false")
+    Optional<User> findByUsernameAndUserStatus(String username, UserStatus userStatus);
 }

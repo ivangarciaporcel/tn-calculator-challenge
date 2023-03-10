@@ -28,6 +28,7 @@ public class Operation implements BaseEntity{
     private double cost;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private OperationStatus status;
 
     @Embedded

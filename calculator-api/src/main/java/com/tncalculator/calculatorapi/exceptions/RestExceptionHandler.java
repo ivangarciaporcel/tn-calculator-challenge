@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -61,6 +63,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleForbiddenServiceException(ForbiddenServiceException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
         ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, errorMessage);
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
+        String errorMessage = getErrorMessage(ex.getMessage(), new Object[]{});
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, errorMessage);
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(CredentialsExpiredException.class)
+    public ResponseEntity<Object> handleCredentialsExpiredException(CredentialsExpiredException ex) {
+        String errorMessage = getErrorMessage(ex.getMessage(), new Object[]{});
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, errorMessage);
         return buildResponseEntity(apiError);
     }
 

@@ -34,6 +34,7 @@ public class Record {
     private double userBalance;
 
     @Column(name = "operation_response", nullable = false)
+    @Enumerated(EnumType.STRING)
     private OperationResponse operationResponse;
 
     @Embedded

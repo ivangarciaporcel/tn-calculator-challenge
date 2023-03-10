@@ -1,11 +1,8 @@
 package com.tncalculator.calculatorapi.integration.users;
 
-import com.tncalculator.calculatorapi.domain.model.Authority;
 import com.tncalculator.calculatorapi.domain.model.User;
 import com.tncalculator.calculatorapi.exceptions.NotFoundException;
 import com.tncalculator.calculatorapi.integration.BaseIntegrationTest;
-import com.tncalculator.calculatorapi.security.Roles;
-import com.tncalculator.calculatorapi.utils.Builders;
 import com.tncalculator.calculatorapi.utils.SecurityUtils;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
@@ -15,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.util.Set;
 
-import static com.tncalculator.calculatorapi.utils.Builders.authority;
+import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
 import static com.tncalculator.calculatorapi.utils.Builders.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,7 +35,7 @@ public class CreateUserIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithUserDetails("admin")
     public void test() throws NotFoundException {
-        User user = user("test");
+        User user = user("test", Set.of(USER_ADMIN));
         User createdUser = userService.create(user);
         assertNotNull(createdUser);
         User foundUser = userService.findById(createdUser.getId());

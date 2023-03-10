@@ -2,7 +2,6 @@ package com.tncalculator.calculatorapi.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tncalculator.calculatorapi.domain.model.UserStatus;
-import com.tncalculator.calculatorapi.security.Roles;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -37,6 +36,6 @@ public class UserDTO {
     private double balance;
 
     @NotNull
-    private List<Roles> roles;
+    private Set<String> roles;
 
 }
