@@ -19,8 +19,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class User implements UserDetails {
+public class User implements UserDetails, BaseEntity {
 
+    public static final String FIELD_USERNAME = "username";
     @Id
     @Column(name = "user_id")
     @GeneratedValue
@@ -80,5 +81,10 @@ public class User implements UserDetails {
 
     private boolean isUserActive() {
         return UserStatus.ACTIVE.equals(this.userStatus);
+    }
+
+    @Override
+    public void markAsDeleted() {
+        audit.onDelete();
     }
 }

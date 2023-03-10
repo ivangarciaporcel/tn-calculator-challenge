@@ -19,8 +19,9 @@ public class Record {
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "operation_id")
-    private UUID operationId;
+    @JoinColumn(name = "operation_id")
+    @ManyToOne
+    private Operation operation;
 
     @JoinColumn(name = "user_id")
     @ManyToOne

@@ -12,7 +12,9 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class Operation {
+public class Operation implements BaseEntity{
+
+    public static final String FIELD_TYPE = "type";
 
     @Id
     @Column(name = "id")
@@ -30,4 +32,9 @@ public class Operation {
 
     @Embedded
     private Audit audit = new Audit();
+
+    @Override
+    public void markAsDeleted() {
+        audit.onDelete();
+    }
 }

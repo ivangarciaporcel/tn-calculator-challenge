@@ -6,7 +6,7 @@ import com.tncalculator.calculatorapi.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface BaseService<E, P, I> {
+public interface RestService<E, P, I> {
 
     E create(E e);
 

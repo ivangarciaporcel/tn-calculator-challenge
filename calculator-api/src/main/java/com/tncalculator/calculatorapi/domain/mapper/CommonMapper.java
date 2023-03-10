@@ -17,7 +17,4 @@ public class CommonMapper {
         return null;
     }
 
-    public LocalDateTime map(Instant instant) {
-        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-    }
 }
