@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tncalculator.calculatorapi.domain.mapper.OperationMapper;
 import com.tncalculator.calculatorapi.domain.mapper.UserMapper;
-import com.tncalculator.calculatorapi.domain.model.User;
 import com.tncalculator.calculatorapi.repository.OperationRepository;
 import com.tncalculator.calculatorapi.repository.UserRepository;
 import com.tncalculator.calculatorapi.services.MessageService;
@@ -24,10 +23,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.tncalculator.calculatorapi.utils.ContainerUtils.postgreSQLContainer;
@@ -116,10 +118,11 @@ public abstract class BaseIntegrationTest {
         return objectMapper.readValue(body, new TypeReference<Page<T>>() {});
     }
 
-    protected void setSecurityContextHolder(User user) {
+    protected void setSecurityContextHolder(String userName) {
         authentication = mock(Authentication.class);
         securityContext = mock(SecurityContext.class);
-        when(authentication.getPrincipal()).thenReturn(user);
+        UserDetails userDetails = new User(userName, "", true, true, true, true, Collections.emptyList());
+        when(authentication.getPrincipal()).thenReturn(userDetails);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
     }

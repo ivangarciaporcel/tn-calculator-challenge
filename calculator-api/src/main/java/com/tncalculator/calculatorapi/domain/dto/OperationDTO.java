@@ -2,7 +2,9 @@ package com.tncalculator.calculatorapi.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tncalculator.calculatorapi.domain.model.OperationStatus;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +24,9 @@ public class OperationDTO {
     @NotBlank(message = "{operation.type.not.blank}")
     private String type;
 
-    private double cost;
+    @DecimalMin("0.0")
+    private Double cost;
 
-    @NotBlank
+    @NotNull
     private OperationStatus status;
 }

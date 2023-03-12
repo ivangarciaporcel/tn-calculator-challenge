@@ -1,7 +1,9 @@
 package com.tncalculator.calculatorapi.domain.dto;
 
 import com.tncalculator.calculatorapi.domain.model.OperationStatus;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,9 +17,7 @@ import java.util.Optional;
 @Builder
 public class OperationPartialDTO {
 
-    private Optional<@NotBlank(message = "{operation.type.not.blank}") String> type;
+    private Optional<@DecimalMin("0.0") Double> cost;
 
-    private Optional<Double> cost;
-
-    private Optional<@NotBlank OperationStatus> status;
+    private Optional<@NotNull OperationStatus> status;
 }

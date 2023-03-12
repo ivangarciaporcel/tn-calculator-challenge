@@ -70,7 +70,7 @@ public abstract class BaseRestService<E extends BaseEntity, T, P> implements Res
     }
 
     protected abstract void validateCreate(E e);
-    protected abstract void validateUpdate(E e, E existentEntity) throws IllegalArgumentServiceException, ForbiddenServiceException;
-    protected abstract void validatePatch(E existentEntity, P partial) throws IllegalArgumentServiceException, ForbiddenServiceException;
-    protected abstract void validateDelete(E e) throws ForbiddenServiceException;
+    protected abstract void validateUpdate(E e, E existentEntity);
+    protected abstract void validatePatch(E existentEntity, P partial);
+    protected abstract void validateDelete(E e);
 }

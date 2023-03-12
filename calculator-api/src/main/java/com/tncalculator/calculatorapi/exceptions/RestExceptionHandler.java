@@ -45,6 +45,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(InvalidOperationArgumentsException.class)
+    public ResponseEntity<Object> handleInvalidOperationArgumentsException(InvalidOperationArgumentsException ex) {
+        String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
+        ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(InvalidRolesException.class)
+    public ResponseEntity<Object> handleInvalidRolesException(InvalidRolesException ex) {
+        String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
+        ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
+        return buildResponseEntity(apiError);
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), new Object[]{});
@@ -108,8 +121,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String errorMessage;
         try {
             errorMessage = messageService.getMessage(message, args);
-        }
-        catch (NoSuchMessageException ex) {
+        } catch (NoSuchMessageException ex) {
             errorMessage = message;
         }
         return errorMessage;

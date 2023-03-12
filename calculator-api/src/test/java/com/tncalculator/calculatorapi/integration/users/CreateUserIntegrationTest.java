@@ -35,14 +35,10 @@ public class CreateUserIntegrationTest extends BaseIntegrationTest {
 
     private String baseUrl;
 
-    private User userAdmin;
-
     @BeforeEach
     public void setUp() {
         baseUrl = "http://localhost:" + port + "/users";
-        userAdmin = userRepository.findByUsernameAndUserStatus(ADMIN_USER, UserStatus.ACTIVE).orElse(null);
-        assertNotNull(userAdmin);
-        setSecurityContextHolder(userAdmin);
+        setSecurityContextHolder(ADMIN_USER);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.tncalculator.calculatorapi.domain.dto;
 
 import com.tncalculator.calculatorapi.domain.model.UserStatus;
+import com.tncalculator.calculatorapi.validation.UserRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,5 @@ public class UserPartialDTO {
 
     private Optional<@NotNull(message = "{user.status.not.blank}") UserStatus> status;
 
-    private Optional<@NotNull Set<String>> roles;
+    private Optional<@UserRole Set<String>> roles;
 }

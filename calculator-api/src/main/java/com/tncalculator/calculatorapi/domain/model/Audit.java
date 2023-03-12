@@ -7,13 +7,13 @@ import jakarta.persistence.PreUpdate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.UUID;
+
+import static com.tncalculator.calculatorapi.security.SecurityUtils.getAuthUserDetails;
 
 @EqualsAndHashCode
 @Getter
@@ -25,39 +25,36 @@ public class Audit {
     private LocalDateTime createdAt;
 
     @Column(name = "created_by")
-    private UUID createdBy;
+    private String createdBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Column(name = "updated_by")
-    private UUID updatedBy;
+    private String updatedBy;
 
     @Column(name = "deleted")
     private boolean deleted;
 
     @PrePersist
     public void prePersist() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
+        UserDetails user = getAuthUserDetails();
         createdAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
-        createdBy = user.getId();
+        createdBy = user.getUsername();
         deleted = false;
     }
 
     @PreUpdate
     public void preUpdate() {
         updatedAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        updatedBy = user.getId();
+        UserDetails user = getAuthUserDetails();
+        updatedBy = user.getUsername();
     }
 
     public void onDelete() {
         updatedAt = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        updatedBy = user.getId();
+        UserDetails user = getAuthUserDetails();
+        updatedBy = user.getUsername();
         deleted = true;
     }
 }

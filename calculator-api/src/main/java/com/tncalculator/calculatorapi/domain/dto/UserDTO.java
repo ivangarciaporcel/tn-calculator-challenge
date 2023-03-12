@@ -2,6 +2,7 @@ package com.tncalculator.calculatorapi.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tncalculator.calculatorapi.domain.model.UserStatus;
+import com.tncalculator.calculatorapi.validation.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +36,7 @@ public class UserDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private double balance;
 
-    @NotNull
+    @UserRole
     private Set<String> roles;
 
 }

@@ -1,10 +1,13 @@
 package com.tncalculator.calculatorapi.controllers;
 
+import com.tncalculator.calculatorapi.domain.dto.CalculatorOperationsDTO;
 import com.tncalculator.calculatorapi.domain.dto.OperationDTO;
 import com.tncalculator.calculatorapi.domain.dto.OperationPartialDTO;
+import com.tncalculator.calculatorapi.domain.dto.OperationResultDTO;
 import com.tncalculator.calculatorapi.domain.mapper.OperationMapper;
 import com.tncalculator.calculatorapi.domain.model.Operation;
 import com.tncalculator.calculatorapi.services.OperationService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.tncalculator.calculatorapi.constants.AuditConstants.CREATED_AT;
 import static com.tncalculator.calculatorapi.constants.AuditConstants.UPDATED_AT;
+import static com.tncalculator.calculatorapi.constants.MessageConstants.ID_NOT_NULL;
 import static com.tncalculator.calculatorapi.domain.model.Operation.FIELD_TYPE;
+import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
 import static com.tncalculator.calculatorapi.utils.PageUtils.getSortOrders;
 
 @RestController
@@ -50,6 +56,7 @@ public class OperationController extends BaseController<Operation, OperationDTO,
         return super.get(id);
     }
 
+    @RolesAllowed(USER_ADMIN)
     @SneakyThrows
     @PutMapping("/{id}")
     @Override
@@ -57,6 +64,7 @@ public class OperationController extends BaseController<Operation, OperationDTO,
         return super.update(id, dto);
     }
 
+    @RolesAllowed(USER_ADMIN)
     @SneakyThrows
     @PatchMapping("/{id}")
     @Override
@@ -64,6 +72,7 @@ public class OperationController extends BaseController<Operation, OperationDTO,
         return super.patch(id, partialDTO);
     }
 
+    @RolesAllowed(USER_ADMIN)
     @SneakyThrows
     @DeleteMapping("/{id}")
     @Override
@@ -81,5 +90,12 @@ public class OperationController extends BaseController<Operation, OperationDTO,
         Pageable pagination = PageRequest.of(page, size, Sort.by(orders));
         Page<Operation> paged = operationService.list(pagination);
         return new PageImpl<>(mapper.entitiesToDTOs(paged.getContent()), paged.getPageable(), paged.getContent().size());
+    }
+
+    @SneakyThrows
+    @PostMapping("/{id}/calculate")
+    public OperationResultDTO calculateOperation(@PathVariable Optional<UUID> id, @RequestBody @Valid CalculatorOperationsDTO dto) {
+        checkArgument(id.isPresent(), ID_NOT_NULL);
+        return operationService.calculate(id.get(), dto.getParameters());
     }
 }

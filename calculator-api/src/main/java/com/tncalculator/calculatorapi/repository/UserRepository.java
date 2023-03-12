@@ -19,6 +19,9 @@ public interface UserRepository extends BaseRepository<User, UUID> {
     @Query("SELECT count(u)>0 FROM User u WHERE u.id = :id and u.audit.deleted = false")
     boolean existsByIdNotDeleted(UUID id);
 
+    @Query("SELECT count(u)>0 FROM User u WHERE u.username = :username and u.audit.deleted = false")
+    boolean existsByUsernameNotDeleted(String username);
+
     @Query("SELECT u FROM User u WHERE u.audit.deleted = false")
     Page<User> listNotDeleted(Pageable pageable);
 
