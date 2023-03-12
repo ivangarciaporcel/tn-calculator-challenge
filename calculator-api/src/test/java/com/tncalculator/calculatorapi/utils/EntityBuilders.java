@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class Builders {
+public class EntityBuilders {
 
-    private Builders() {}
+    private EntityBuilders() {}
 
     public static User user(String userName, Set<String> roles) {
         User user = new User();

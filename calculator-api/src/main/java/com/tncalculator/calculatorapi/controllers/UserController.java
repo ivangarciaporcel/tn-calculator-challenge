@@ -5,6 +5,7 @@ import com.tncalculator.calculatorapi.domain.dto.UserPartialDTO;
 import com.tncalculator.calculatorapi.domain.mapper.UserMapper;
 import com.tncalculator.calculatorapi.domain.model.User;
 import com.tncalculator.calculatorapi.services.UserService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import java.util.UUID;
 
 import static com.tncalculator.calculatorapi.constants.AuditConstants.CREATED_AT;
 import static com.tncalculator.calculatorapi.constants.AuditConstants.UPDATED_AT;
+import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
+import static com.tncalculator.calculatorapi.domain.model.Role.USER_CALCULATOR;
 import static com.tncalculator.calculatorapi.domain.model.User.FIELD_USERNAME;
 import static com.tncalculator.calculatorapi.utils.PageUtils.getSortOrders;
 
@@ -36,6 +39,7 @@ public class UserController extends BaseController<User, UserDTO, UserPartialDTO
         this.mapper = mapper;
     }
 
+    @RolesAllowed(USER_ADMIN)
     @PostMapping
     @ResponseStatus( HttpStatus.CREATED)
     @Override
@@ -71,6 +75,7 @@ public class UserController extends BaseController<User, UserDTO, UserPartialDTO
         super.delete(id);
     }
 
+    @RolesAllowed(USER_ADMIN)
     @SneakyThrows
     @GetMapping
     @Override

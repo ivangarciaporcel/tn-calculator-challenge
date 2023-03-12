@@ -12,17 +12,18 @@ import com.tncalculator.calculatorapi.security.providers.JwtAuthenticationProvid
 import com.tncalculator.calculatorapi.security.services.DbUserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,12 +31,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+@ConditionalOnProperty("calculator.security.enabled")
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(jsr250Enabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
-
-    private final String apiBase = "/api/v1";
 
     private final UserRepository userRepository;
 
@@ -43,17 +43,15 @@ public class SecurityConfig {
 
     private final JwtPropertiesConfiguration jwtPropertiesConfiguration;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
     public SecurityConfig(UserRepository userRepository, RestExceptionHandler restExceptionHandler,
-                          JwtPropertiesConfiguration jwtPropertiesConfiguration) {
+                          JwtPropertiesConfiguration jwtPropertiesConfiguration, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.restExceptionHandler = restExceptionHandler;
         this.jwtPropertiesConfiguration = jwtPropertiesConfiguration;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
@@ -64,7 +62,7 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DBAuthenticationProvider dbAuthenticationProvider = new DBAuthenticationProvider();
-        dbAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        dbAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         dbAuthenticationProvider.setUserDetailsService(userDetailsService());
         return dbAuthenticationProvider;
     }
@@ -156,5 +154,9 @@ public class SecurityConfig {
         return source;
     }
 
+    @Bean
+    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
+    }
 }
 

@@ -7,6 +7,7 @@ import com.tncalculator.calculatorapi.domain.model.User;
 import com.tncalculator.calculatorapi.security.jwt.JwtTokenEncoder;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@ConditionalOnProperty("calculator.security.enabled")
 @RestController
 @RequestMapping(path = "/login")
 public class AuthApi {

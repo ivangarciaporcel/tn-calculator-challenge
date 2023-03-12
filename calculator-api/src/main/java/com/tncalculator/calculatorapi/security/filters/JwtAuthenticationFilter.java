@@ -5,8 +5,6 @@ import com.tncalculator.calculatorapi.security.providers.JwtAuthenticationToken;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +13,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class JwtAuthenticationFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String AUTHORIZATION_TYPE = "Bearer ";
 
@@ -37,9 +35,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (request instanceof HttpServletRequest httpRequest && response instanceof HttpServletResponse) {
-            String header = httpRequest.getHeader(HEADER_AUTHORIZATION);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+            String header = request.getHeader(HEADER_AUTHORIZATION);
             if (header != null && header.startsWith(AUTHORIZATION_TYPE)) {
                 String token = header.substring(AUTHORIZATION_TYPE.length()).trim();
                 JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(token);
@@ -53,9 +50,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                     restExceptionHandler.handleBadCredentialsException(new BadCredentialsException(e.getMessage(), e));
                 }
             }
-        }
-
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
+
 }
 
