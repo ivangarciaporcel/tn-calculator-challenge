@@ -12,7 +12,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class Record {
+public class Record implements BaseEntity {
 
     @Id
     @Column(name = "id")
@@ -39,4 +39,9 @@ public class Record {
 
     @Embedded
     private Audit audit = new Audit();
+
+    @Override
+    public void markAsDeleted() {
+        audit.onDelete();
+    }
 }

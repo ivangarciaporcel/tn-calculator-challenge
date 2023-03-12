@@ -86,7 +86,7 @@ public class OperationService extends BaseRestService<Operation, OperationDTO, O
 
         Object result = null;
         double currentUserBalance = user.getBalance();
-        if(OperationResponse.APPROVED.equals(operationResponse)) {
+        if (OperationResponse.APPROVED.equals(operationResponse)) {
             CalculatorOperation<?> calculatorOperation = OperationsFactory.getOperation(operation.getType());
             result = calculatorOperation.calculate(parameters);
 
@@ -100,12 +100,9 @@ public class OperationService extends BaseRestService<Operation, OperationDTO, O
         Record record = record(operation, user, operation.getCost(), currentUserBalance, operationResponse);
         recordRepository.save(record);
 
-        if(OperationResponse.DENIED.equals(operationResponse)) {
-            throw new IllegalArgumentException(USER_BALANCE_NOT_ENOUGH_OPERATION);
-        }
-
         return OperationResultDTO.builder()
-                .result(result!=null ? result : "")
+                .result(result != null ? result : "")
+                .operationResponse(operationResponse)
                 .build();
     }
 

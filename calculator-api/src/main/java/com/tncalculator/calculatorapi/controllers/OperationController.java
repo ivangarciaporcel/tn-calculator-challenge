@@ -6,6 +6,7 @@ import com.tncalculator.calculatorapi.domain.dto.OperationPartialDTO;
 import com.tncalculator.calculatorapi.domain.dto.OperationResultDTO;
 import com.tncalculator.calculatorapi.domain.mapper.OperationMapper;
 import com.tncalculator.calculatorapi.domain.model.Operation;
+import com.tncalculator.calculatorapi.domain.model.OperationResponse;
 import com.tncalculator.calculatorapi.services.OperationService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.tncalculator.calculatorapi.constants.AuditConstants.CREATED_AT;
 import static com.tncalculator.calculatorapi.constants.AuditConstants.UPDATED_AT;
 import static com.tncalculator.calculatorapi.constants.MessageConstants.ID_NOT_NULL;
+import static com.tncalculator.calculatorapi.constants.MessageConstants.USER_BALANCE_NOT_ENOUGH_OPERATION;
 import static com.tncalculator.calculatorapi.domain.model.Operation.FIELD_TYPE;
 import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
 import static com.tncalculator.calculatorapi.utils.PageUtils.getSortOrders;
@@ -43,7 +45,7 @@ public class OperationController extends BaseController<Operation, OperationDTO,
     }
 
     @PostMapping
-    @ResponseStatus( HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.CREATED)
     @Override
     public OperationDTO create(@RequestBody @Valid OperationDTO dto) {
         return super.create(dto);
@@ -84,8 +86,8 @@ public class OperationController extends BaseController<Operation, OperationDTO,
     @GetMapping
     @Override
     public Page<OperationDTO> list(@RequestParam(value = "page", defaultValue = "0") int page,
-                              @RequestParam(value = "size", defaultValue = "10") int size,
-                              @RequestParam(defaultValue = "type,asc") String[] sort) {
+                                   @RequestParam(value = "size", defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "type,asc") String[] sort) {
         List<Sort.Order> orders = getSortOrders(sort, List.of(FIELD_TYPE, CREATED_AT, UPDATED_AT));
         Pageable pagination = PageRequest.of(page, size, Sort.by(orders));
         Page<Operation> paged = operationService.list(pagination);
@@ -96,6 +98,10 @@ public class OperationController extends BaseController<Operation, OperationDTO,
     @PostMapping("/{id}/calculate")
     public OperationResultDTO calculateOperation(@PathVariable Optional<UUID> id, @RequestBody @Valid CalculatorOperationsDTO dto) {
         checkArgument(id.isPresent(), ID_NOT_NULL);
-        return operationService.calculate(id.get(), dto.getParameters());
+        OperationResultDTO result = operationService.calculate(id.get(), dto.getParameters());
+        if (OperationResponse.DENIED.equals(result.getOperationResponse())) {
+            throw new IllegalArgumentException(USER_BALANCE_NOT_ENOUGH_OPERATION);
+        }
+        return result;
     }
 }

@@ -2,6 +2,7 @@ package com.tncalculator.calculatorapi.operations;
 
 import com.tncalculator.calculatorapi.exceptions.InvalidOperationArgumentsException;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public abstract class CalculatorOperation<R> {
 
     public R calculate(Map<String, Double> parameters) throws Exception {
         Set<String> requiredParameters = getRequiredParameters();
-        if (!requiredParameters.equals(parameters.keySet())) {
+        if (!requiredParameters.equals(parameters != null ? parameters.keySet() : Collections.emptySet())) {
             if (requiredParameters.isEmpty()) {
                 throw new IllegalArgumentException(OPERATION_SHOULD_NOT_HAVE_PARAMETERS);
             }
