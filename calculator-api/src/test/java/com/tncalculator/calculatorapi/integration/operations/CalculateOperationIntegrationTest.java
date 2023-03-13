@@ -13,6 +13,7 @@ import com.tncalculator.calculatorapi.operations.CalculatorOperation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
@@ -234,14 +235,50 @@ public class CalculateOperationIntegrationTest extends BaseIntegrationTest {
                 () -> assertEquals(OperationResponse.APPROVED, response.getOperationResponse())
         );
 
-        // Assert user balance has changed
-        Optional<User> optUser = userRepository.findByIdNotDeleted(user.getId());
-        assertTrue(optUser.isPresent());
-        user = optUser.get();
-        assertEquals(originalBalance - operationCost, user.getBalance());
+        assertBalanceAfterApprovedOperation(user.getId(), originalBalance, operationCost);
+        assertRecordAfterApprovedOperation(user.getId(), operationId, originalBalance, operationCost);
+    }
 
-        // Assert a record was written for the calculation
-        List<Record> record = recordRepository.listByUser(user.getId());
+    @Test
+    public void testCalculateOperationRandomString() throws URISyntaxException, JsonProcessingException {
+        double originalBalance = 100.0;
+        double operationCost = 90.0;
+        User user = user(ADMIN_USER, Set.of(USER_ADMIN));
+        user.setBalance(originalBalance);
+        user = userRepository.save(user);
+
+        Operation operation = operation(RANDOM_STRING, OperationStatus.APPROVED);
+        operation.setCost(operationCost);
+        operation = operationRepository.save(operation);
+        UUID operationId = operation.getId();
+
+        URI uri = new URI(String.format(url, operation.getId()));
+        CalculatorOperationsDTO calculatorOperationsDTO = calculatorOperationsDTO(Map.of());
+
+        HttpEntity<CalculatorOperationsDTO> request = new HttpEntity<>(calculatorOperationsDTO);
+        ResponseEntity<String> result = this.restTemplate.postForEntity(uri, request, String.class);
+
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+
+        OperationResultDTO response = getResponse(result.getBody(), OperationResultDTO.class);
+        assertAll(
+                () -> assertTrue(StringUtils.isNotBlank((String) response.getResult())),
+                () -> assertEquals(OperationResponse.APPROVED, response.getOperationResponse())
+        );
+
+        assertBalanceAfterApprovedOperation(user.getId(), originalBalance, operationCost);
+        assertRecordAfterApprovedOperation(user.getId(), operationId, originalBalance, operationCost);
+    }
+
+    private void assertBalanceAfterApprovedOperation(UUID userId, double originalBalance, double operationCost) {
+        Optional<User> optUser = userRepository.findByIdNotDeleted(userId);
+        assertTrue(optUser.isPresent());
+        User user = optUser.get();
+        assertEquals(originalBalance - operationCost, user.getBalance());
+    }
+
+    private void assertRecordAfterApprovedOperation(UUID userId, UUID operationId, double originalBalance, double operationCost) {
+        List<Record> record = recordRepository.listByUser(userId);
         assertEquals(1, record.size());
         Record savedRecord = record.get(0);
         assertAll(

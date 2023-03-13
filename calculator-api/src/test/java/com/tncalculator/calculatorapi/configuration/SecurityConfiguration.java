@@ -18,7 +18,7 @@ public class SecurityConfiguration {
     public static final String CALCULATOR_USER = "calculator_user@tncalculator.com";
 
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate restTemplateTest() {
         RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
         rest.getMessageConverters().add(0, mappingJacksonHttpMessageConverter());
 //        rest.setRequestFactory(new HttpComponentsClientHttpRequestFactory());

@@ -18,15 +18,15 @@ public class RandomHttpClient {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public RandomHttpClient() {
-        this.restTemplate = new RestTemplate();
+    public RandomHttpClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     public String generateRandomString() {
         String url = getUrl();
         log.debug(String.format("URL used to generate random strings: %s.", url));
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        checkArgument(HttpStatus.OK.value() ==  response.getStatusCode().value(), RANDOM_STRING_NOT_GENERATED);
+        checkArgument(HttpStatus.OK.value() == response.getStatusCode().value(), RANDOM_STRING_NOT_GENERATED);
         return response.getBody();
     }
 
