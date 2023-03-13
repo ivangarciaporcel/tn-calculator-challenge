@@ -20,4 +20,7 @@ public interface OperationRepository extends BaseRepository<Operation, UUID> {
 
     @Query("SELECT o FROM Operation o WHERE o.audit.deleted = false")
     Page<Operation> listNotDeleted(Pageable pageable);
+
+    @Query("SELECT count(o)>0 FROM Operation o WHERE o.type = :type and o.audit.deleted = false")
+    boolean existsByTypeNotDeleted(String type);
 }

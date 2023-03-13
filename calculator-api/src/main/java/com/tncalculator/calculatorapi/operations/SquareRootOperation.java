@@ -10,7 +10,7 @@ public class SquareRootOperation extends CalculatorOperation<Double>{
     private final Set<String> requiredParameters = Set.of(SINGLE_PARAMETER);
 
     @Override
-    protected Set<String> getRequiredParameters() {
+    public Set<String> getRequiredParameters() {
         return this.requiredParameters;
     }
 

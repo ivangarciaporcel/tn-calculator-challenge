@@ -17,7 +17,7 @@ import java.util.Optional;
 @Builder
 public class OperationPartialDTO {
 
-    private Optional<@DecimalMin("0.0") Double> cost;
+    private Optional<@DecimalMin(value = "0.0", inclusive = false) Double> cost;
 
-    private Optional<@NotNull OperationStatus> status;
+    private Optional<@NotNull(message = "{operation.status.not.null}") OperationStatus> status;
 }

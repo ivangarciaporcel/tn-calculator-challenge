@@ -46,6 +46,7 @@ public class OperationService extends BaseRestService<Operation, OperationDTO, O
     @Override
     protected void validateCreate(Operation operation) {
         checkArgument(OperationStatus.IN_VERIFICATION.equals(operation.getStatus()), NEW_OPERATION_SHOULD_BE_IN_VERIFICATION);
+        checkArgument(!operationRepository.existsByTypeNotDeleted(operation.getType()), OPERATION_WITH_SAME_TYPE_EXISTS);
     }
 
     @SneakyThrows

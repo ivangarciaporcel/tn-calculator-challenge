@@ -30,6 +30,12 @@ public class RecordService {
         this.userRepository = userRepository;
     }
 
+    public Record findById(UUID id) throws NotFoundException {
+        User user = getAuthenticatedUser();
+        return recordRepository.findByUserAndId(user.getId(), id).orElseThrow(
+                () -> new NotFoundException(ID_NOT_FOUND, new Object[]{Record.class.getSimpleName(), id.toString()}));
+    }
+
     public void delete(UUID id) throws NotFoundException {
         User user = getAuthenticatedUser();
         Record record = recordRepository.findByUserAndId(user.getId(), id).orElseThrow(

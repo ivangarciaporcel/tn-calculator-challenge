@@ -1,9 +1,11 @@
 package com.tncalculator.calculatorapi.utils;
 
-import com.tncalculator.calculatorapi.domain.dto.AuthRequestDTO;
-import com.tncalculator.calculatorapi.domain.dto.UserDTO;
+import com.tncalculator.calculatorapi.domain.dto.*;
+import com.tncalculator.calculatorapi.domain.model.OperationStatus;
 import com.tncalculator.calculatorapi.domain.model.UserStatus;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class DTOBuilders {
@@ -21,4 +23,32 @@ public class DTOBuilders {
                 .build();
     }
 
+    public static UserPartialDTO userPartialDTO(String password, UserStatus status, Set<String> roles) {
+        return UserPartialDTO.builder()
+                .password(Optional.of(password))
+                .status(Optional.of(status))
+                .roles(Optional.of(roles))
+                .build();
+    }
+
+    public static OperationDTO operationDTO(String type, double cost, OperationStatus status) {
+        return OperationDTO.builder()
+                .type(type)
+                .cost(cost)
+                .status(status)
+                .build();
+    }
+
+    public static OperationPartialDTO operationPartialDTO(double cost, OperationStatus operationStatus) {
+        return OperationPartialDTO.builder()
+                .cost(Optional.of(cost))
+                .status(Optional.of(operationStatus))
+                .build();
+    }
+
+    public static CalculatorOperationsDTO calculatorOperationsDTO(Map<String, Double> parameters) {
+        return CalculatorOperationsDTO.builder()
+                .parameters(parameters)
+                .build();
+    }
 }

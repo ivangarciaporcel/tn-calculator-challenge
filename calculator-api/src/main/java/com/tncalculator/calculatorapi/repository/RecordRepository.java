@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,4 +20,10 @@ public interface RecordRepository extends JpaRepository<Record, UUID>, JpaSpecif
 
     @Query("SELECT r FROM Record r WHERE r.user.id = :userId and r.audit.deleted = false")
     Page<Record> listByUser(UUID userId, Pageable pageable);
+
+    @Query("SELECT r FROM Record r WHERE r.user.id = :userId and r.audit.deleted = false")
+    List<Record> listByUser(UUID userId);
+
+    @Query("SELECT count(r)>0 FROM Record r WHERE r.id = :id and r.audit.deleted = false")
+    boolean existsByIdNotDeleted(UUID id);
 }

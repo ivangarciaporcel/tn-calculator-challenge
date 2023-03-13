@@ -9,7 +9,7 @@ public class RandomStringOperation extends CalculatorOperation<String>{
     private final Set<String> requiredParameters = Set.of();
 
     @Override
-    protected Set<String> getRequiredParameters() {
+    public Set<String> getRequiredParameters() {
         return this.requiredParameters;
     }
 

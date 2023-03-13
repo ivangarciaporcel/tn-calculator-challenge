@@ -20,7 +20,7 @@ public class UserPartialDTO {
 
     private Optional<@NotBlank(message = "{password.not.blank}") String> password;
 
-    private Optional<@NotNull(message = "{user.status.not.blank}") UserStatus> status;
+    private Optional<@NotNull(message = "{user.status.not.null}") UserStatus> status;
 
     private Optional<@UserRole Set<String>> roles;
 }

@@ -6,6 +6,8 @@ import com.tncalculator.calculatorapi.domain.dto.UserPartialDTO;
 import com.tncalculator.calculatorapi.domain.mapper.UserMapper;
 import com.tncalculator.calculatorapi.domain.model.User;
 import com.tncalculator.calculatorapi.domain.model.UserStatus;
+import com.tncalculator.calculatorapi.exceptions.ForbiddenServiceException;
+import com.tncalculator.calculatorapi.exceptions.IllegalArgumentServiceException;
 import com.tncalculator.calculatorapi.exceptions.NotFoundException;
 import com.tncalculator.calculatorapi.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.tncalculator.calculatorapi.constants.MessageConstants.*;
@@ -25,6 +28,7 @@ import static com.tncalculator.calculatorapi.security.SecurityUtils.getAuthUserD
 public class UserService extends BaseRestService<User, UserDTO, UserPartialDTO> {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserConfigurationProperties userConfigurationProperties;
 
@@ -33,6 +37,7 @@ public class UserService extends BaseRestService<User, UserDTO, UserPartialDTO> 
                        UserConfigurationProperties userConfigurationProperties) {
         super(userRepository, mapper, User.class);
         this.userRepository = userRepository;
+        this.userMapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.userConfigurationProperties = userConfigurationProperties;
     }
@@ -43,6 +48,26 @@ public class UserService extends BaseRestService<User, UserDTO, UserPartialDTO> 
         validateCreate(entity);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         entity.setBalance(userConfigurationProperties.getInitialBalance());
+        return userRepository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public User update(UUID id, User entity) throws NotFoundException, IllegalArgumentServiceException, ForbiddenServiceException {
+        User existentEntity = getById(id);
+        validateUpdate(entity, existentEntity);
+        userMapper.update(existentEntity, entity);
+        existentEntity.setPassword(passwordEncoder.encode(existentEntity.getPassword()));
+        return userRepository.save(existentEntity);
+    }
+
+    @Override
+    @Transactional
+    public User patch(UUID id, UserPartialDTO partial) throws NotFoundException, IllegalArgumentServiceException, ForbiddenServiceException {
+        User entity = getById(id);
+        validatePatch(entity, partial);
+        userMapper.patch(partial, entity);
+        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         return userRepository.save(entity);
     }
 

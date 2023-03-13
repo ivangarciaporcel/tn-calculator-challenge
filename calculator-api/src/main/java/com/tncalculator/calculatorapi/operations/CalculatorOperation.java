@@ -11,7 +11,7 @@ import static com.tncalculator.calculatorapi.constants.MessageConstants.OPERATIO
 
 public abstract class CalculatorOperation<R> {
 
-    abstract protected Set<String> getRequiredParameters();
+    abstract public Set<String> getRequiredParameters();
 
     abstract protected R doCalculation(Map<String, Double> parameters);
 

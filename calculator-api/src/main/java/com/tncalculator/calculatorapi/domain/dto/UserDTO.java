@@ -30,7 +30,7 @@ public class UserDTO {
     @NotBlank(message = "{password.not.blank}")
     private String password;
 
-    @NotNull(message = "{user.status.not.blank}")
+    @NotNull(message = "{user.status.not.null}")
     private UserStatus status;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentServiceException.class)
-    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentServiceException ex) {
+    public ResponseEntity<Object> handleIllegalArgumentServiceException(IllegalArgumentServiceException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
         ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
         return buildResponseEntity(apiError);
@@ -112,6 +113,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         ex.printStackTrace();
         return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(UndeclaredThrowableException.class)
+    public ResponseEntity<Object> handleUndeclaredThrowableException(UndeclaredThrowableException ex) {
+        if(ex.getCause() instanceof NotFoundException) {
+            return handleNotExistentEntity((NotFoundException) ex.getCause());
+        }
+        else if(ex.getCause() instanceof IllegalArgumentException) {
+            return handleIllegalArgumentException((IllegalArgumentException) ex.getCause());
+        }
+        return handleException(ex);
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {

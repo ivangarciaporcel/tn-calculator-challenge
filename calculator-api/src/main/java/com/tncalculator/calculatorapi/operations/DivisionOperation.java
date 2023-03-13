@@ -13,7 +13,7 @@ public class DivisionOperation extends CalculatorOperation<Double>{
     private final Set<String> requiredParameters = Set.of(NUMERATOR, DENOMINATOR);
 
     @Override
-    protected Set<String> getRequiredParameters() {
+    public Set<String> getRequiredParameters() {
         return this.requiredParameters;
     }
 

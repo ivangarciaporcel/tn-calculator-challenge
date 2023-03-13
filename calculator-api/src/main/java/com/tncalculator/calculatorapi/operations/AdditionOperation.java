@@ -11,7 +11,7 @@ public class AdditionOperation extends CalculatorOperation<Double>{
     private final Set<String> requiredParameters = Set.of(FIRST_NUMBER, SECOND_NUMBER);
 
     @Override
-    protected Set<String> getRequiredParameters() {
+    public Set<String> getRequiredParameters() {
         return this.requiredParameters;
     }
 

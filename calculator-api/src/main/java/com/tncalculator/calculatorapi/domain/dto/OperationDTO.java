@@ -24,9 +24,9 @@ public class OperationDTO {
     @NotBlank(message = "{operation.type.not.blank}")
     private String type;
 
-    @DecimalMin("0.0")
+    @DecimalMin(value = "0.0", inclusive = false)
     private Double cost;
 
-    @NotNull
+    @NotNull(message = "{operation.status.not.null}")
     private OperationStatus status;
 }

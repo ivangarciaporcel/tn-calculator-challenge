@@ -14,6 +14,8 @@ import java.util.UUID;
 @Setter
 public class Record implements BaseEntity {
 
+    public static final String FIELD_USER_ID = "user.id";
+    public static final String FIELD_OPERATION_ID = "operation.id";
     @Id
     @Column(name = "id")
     @GeneratedValue

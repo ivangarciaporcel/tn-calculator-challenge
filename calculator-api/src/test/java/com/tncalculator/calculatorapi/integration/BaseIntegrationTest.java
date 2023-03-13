@@ -5,9 +5,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.tncalculator.calculatorapi.configuration.UserConfigurationProperties;
 import com.tncalculator.calculatorapi.domain.mapper.OperationMapper;
 import com.tncalculator.calculatorapi.domain.mapper.UserMapper;
+import com.tncalculator.calculatorapi.domain.model.Operation;
+import com.tncalculator.calculatorapi.domain.model.OperationStatus;
+import com.tncalculator.calculatorapi.domain.model.Record;
 import com.tncalculator.calculatorapi.repository.OperationRepository;
+import com.tncalculator.calculatorapi.repository.RecordRepository;
 import com.tncalculator.calculatorapi.repository.UserRepository;
 import com.tncalculator.calculatorapi.services.MessageService;
 import com.tncalculator.calculatorapi.services.OperationService;
@@ -15,6 +20,7 @@ import com.tncalculator.calculatorapi.services.UserService;
 import com.tncalculator.calculatorapi.utils.PageModule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -31,8 +37,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static com.tncalculator.calculatorapi.utils.ContainerUtils.postgreSQLContainer;
+import static com.tncalculator.calculatorapi.utils.EntityBuilders.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +54,9 @@ public abstract class BaseIntegrationTest {
 
     @Autowired
     protected OperationRepository operationRepository;
+
+    @Autowired
+    protected RecordRepository recordRepository;
 
     @Autowired
     protected UserService userService;
@@ -62,8 +73,13 @@ public abstract class BaseIntegrationTest {
     @Autowired
     protected OperationMapper operationMapper;
 
+    @Autowired
+    protected UserConfigurationProperties userConfigurationProperties;
+
     @LocalServerPort
     protected int port;
+
+    protected String baseUrl = "http://localhost:";
 
     protected static HttpHeaders headers;
 
@@ -75,7 +91,7 @@ public abstract class BaseIntegrationTest {
 
     static {
         postgresqlContainer = postgreSQLContainer();
-        if(!postgresqlContainer.isRunning()) {
+        if (!postgresqlContainer.isRunning()) {
             postgresqlContainer.start();
         }
     }
@@ -93,9 +109,11 @@ public abstract class BaseIntegrationTest {
         headers = new HttpHeaders();
     }
 
-    @AfterEach
-    public void tearDown() {
+    @BeforeEach
+    public void cleanDatabase() {
+        recordRepository.deleteAll();
         operationRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     protected <T> T getResponse(String body, Class<T> tClass) throws JsonProcessingException {
@@ -108,14 +126,16 @@ public abstract class BaseIntegrationTest {
     protected <T> List<T> getResponseAsList(String body) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
-        return objectMapper.readValue(body, new TypeReference<List<T>>() {});
+        return objectMapper.readValue(body, new TypeReference<List<T>>() {
+        });
     }
 
     protected <T> Page<T> getResponseAsPage(String body) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         objectMapper.registerModule(new PageModule());
-        return objectMapper.readValue(body, new TypeReference<Page<T>>() {});
+        return objectMapper.readValue(body, new TypeReference<Page<T>>() {
+        });
     }
 
     protected void setSecurityContextHolder(String userName) {
@@ -125,6 +145,18 @@ public abstract class BaseIntegrationTest {
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
+    }
+
+    protected com.tncalculator.calculatorapi.domain.model.User createUser(String username, Set<String> roles) {
+        return userRepository.save(user(username, roles));
+    }
+
+    protected Operation createOperation(String operationType, OperationStatus operationStatus) {
+        return operationRepository.save(operation(operationType, operationStatus));
+    }
+
+    protected Record createRecord(Operation operation, com.tncalculator.calculatorapi.domain.model.User user) {
+        return recordRepository.save(record(operation, user));
     }
 
 }
