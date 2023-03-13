@@ -23,6 +23,7 @@ public class MessageConstants {
     public static final String OPERATION_STATUS_NOT_NULL = "operation.status.not.null";
     public static final String OPERATION_WITH_SAME_TYPE_EXISTS = "operation.with.same.type.exists";
     public static final String PASSWORD_NOT_BLANK = "password.not.blank";
+    public static final String RANDOM_STRING_NOT_GENERATED = "random.string.not.generated";
     public static final String SORT_PROPERTY_NOT_VALID = "sort.property.not.valid";
     public static final String USER_BALANCE_NOT_ENOUGH_OPERATION = "user.balance.not.enough.operation";
     public static final String USERNAME_ALREADY_EXISTS = "username.already.exists";

@@ -34,13 +34,17 @@ public class OperationService extends BaseRestService<Operation, OperationDTO, O
     private final RecordRepository recordRepository;
     private final UserRepository userRepository;
 
+    private final OperationsFactory operationsFactory;
+
     @Autowired
     public OperationService(OperationRepository operationRepository, RecordRepository recordRepository,
-                            UserRepository userRepository, OperationMapper operationMapper) {
+                            UserRepository userRepository, OperationMapper operationMapper,
+                            OperationsFactory operationsFactory) {
         super(operationRepository, operationMapper, Operation.class);
         this.operationRepository = operationRepository;
         this.recordRepository = recordRepository;
         this.userRepository = userRepository;
+        this.operationsFactory = operationsFactory;
     }
 
     @Override
@@ -88,7 +92,7 @@ public class OperationService extends BaseRestService<Operation, OperationDTO, O
         Object result = null;
         double currentUserBalance = user.getBalance();
         if (OperationResponse.APPROVED.equals(operationResponse)) {
-            CalculatorOperation<?> calculatorOperation = OperationsFactory.getOperation(operation.getType());
+            CalculatorOperation<?> calculatorOperation = operationsFactory.getOperation(operation.getType());
             result = calculatorOperation.calculate(parameters);
 
             // Update user's balance

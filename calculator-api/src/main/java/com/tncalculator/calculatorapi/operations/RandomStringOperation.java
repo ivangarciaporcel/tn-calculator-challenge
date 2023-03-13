@@ -1,10 +1,21 @@
 package com.tncalculator.calculatorapi.operations;
 
+import com.tncalculator.calculatorapi.http.clients.RandomHttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
-public class RandomStringOperation extends CalculatorOperation<String>{
+@Component
+public class RandomStringOperation extends CalculatorOperation<String> {
+
+    private final RandomHttpClient randomHttpClient;
+
+    @Autowired
+    public RandomStringOperation(RandomHttpClient randomHttpClient) {
+        this.randomHttpClient = randomHttpClient;
+    }
 
     private final Set<String> requiredParameters = Set.of();
 
@@ -15,6 +26,6 @@ public class RandomStringOperation extends CalculatorOperation<String>{
 
     @Override
     protected String doCalculation(Map<String, Double> parameters) {
-        return UUID.randomUUID().toString();
+        return randomHttpClient.generateRandomString();
     }
 }

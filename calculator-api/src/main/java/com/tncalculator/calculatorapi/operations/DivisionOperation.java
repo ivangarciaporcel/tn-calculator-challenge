@@ -1,5 +1,7 @@
 package com.tncalculator.calculatorapi.operations;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -8,6 +10,7 @@ import static com.tncalculator.calculatorapi.constants.MessageConstants.DENOMINA
 import static com.tncalculator.calculatorapi.constants.OperationConstants.DENOMINATOR;
 import static com.tncalculator.calculatorapi.constants.OperationConstants.NUMERATOR;
 
+@Component
 public class DivisionOperation extends CalculatorOperation<Double>{
 
     private final Set<String> requiredParameters = Set.of(NUMERATOR, DENOMINATOR);

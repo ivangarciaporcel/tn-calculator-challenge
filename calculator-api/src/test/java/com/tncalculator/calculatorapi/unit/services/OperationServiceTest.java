@@ -3,10 +3,11 @@ package com.tncalculator.calculatorapi.unit.services;
 import com.tncalculator.calculatorapi.domain.dto.OperationPartialDTO;
 import com.tncalculator.calculatorapi.domain.dto.OperationResultDTO;
 import com.tncalculator.calculatorapi.domain.mapper.OperationMapper;
-import com.tncalculator.calculatorapi.domain.model.*;
 import com.tncalculator.calculatorapi.domain.model.Record;
-import com.tncalculator.calculatorapi.exceptions.InvalidOperationArgumentsException;
+import com.tncalculator.calculatorapi.domain.model.*;
 import com.tncalculator.calculatorapi.exceptions.NotFoundException;
+import com.tncalculator.calculatorapi.operations.CalculatorOperation;
+import com.tncalculator.calculatorapi.operations.OperationsFactory;
 import com.tncalculator.calculatorapi.repository.OperationRepository;
 import com.tncalculator.calculatorapi.repository.RecordRepository;
 import com.tncalculator.calculatorapi.repository.UserRepository;
@@ -46,13 +47,17 @@ public class OperationServiceTest extends SecurityMock {
     private OperationMapper operationMapper;
     private OperationService operationService;
 
+    private OperationsFactory operationsFactory;
+
     @BeforeEach
     public void setUp() {
         operationRepository = mock(OperationRepository.class);
         recordRepository = mock(RecordRepository.class);
         userRepository = mock(UserRepository.class);
         operationMapper = mock(OperationMapper.class);
-        operationService = new OperationService(operationRepository, recordRepository, userRepository, operationMapper);
+        operationsFactory = mock(OperationsFactory.class);
+        operationService = new OperationService(operationRepository, recordRepository, userRepository,
+                operationMapper, operationsFactory);
     }
 
     @AfterEach
@@ -167,7 +172,7 @@ public class OperationServiceTest extends SecurityMock {
     }
 
     @Test
-    public void testDeleteOperation() throws Exception{
+    public void testDeleteOperation() throws Exception {
         UUID operationId = UUID.randomUUID();
         Operation existentOperation = operation("ADDITION", OperationStatus.APPROVED);
 
@@ -232,37 +237,7 @@ public class OperationServiceTest extends SecurityMock {
     }
 
     @Test
-    public void testCalculateOperationNotImplemented() {
-        UUID operationId = UUID.randomUUID();
-        Operation existentOperation = operation("NOT_IMPLEMENTED", OperationStatus.APPROVED);
-        existentOperation.setCost(10.0);
-
-        User loggedUser = user(userDetails.getUsername(), Set.of(USER_ADMIN));
-        loggedUser.setBalance(100.0);
-
-        when(operationRepository.findByIdNotDeleted(operationId)).thenReturn(Optional.of(existentOperation));
-        when(userRepository.findByUsernameAndUserStatus(userDetails.getUsername(), UserStatus.ACTIVE)).thenReturn(Optional.of(loggedUser));
-        assertThrows(IllegalArgumentException.class,
-                () -> operationService.calculate(operationId, Map.of()));
-    }
-
-    @Test
-    public void testCalculateOperationAndRequiredParametersNotPresent() {
-        UUID operationId = UUID.randomUUID();
-        Operation existentOperation = operation(ADDITION, OperationStatus.APPROVED);
-        existentOperation.setCost(10.0);
-
-        User loggedUser = user(userDetails.getUsername(), Set.of(USER_ADMIN));
-        loggedUser.setBalance(100.0);
-
-        when(operationRepository.findByIdNotDeleted(operationId)).thenReturn(Optional.of(existentOperation));
-        when(userRepository.findByUsernameAndUserStatus(userDetails.getUsername(), UserStatus.ACTIVE)).thenReturn(Optional.of(loggedUser));
-        assertThrows(InvalidOperationArgumentsException.class,
-                () -> operationService.calculate(operationId, Map.of()));
-    }
-
-    @Test
-    public void testCalculateOperationAndNotEnoughUserBalance() throws Exception{
+    public void testCalculateOperationAndNotEnoughUserBalance() throws Exception {
         UUID operationId = UUID.randomUUID();
         Operation existentOperation = operation(ADDITION, OperationStatus.APPROVED);
         existentOperation.setCost(10.0);
@@ -290,7 +265,7 @@ public class OperationServiceTest extends SecurityMock {
     }
 
     @Test
-    public void testCalculateOperation() throws Exception{
+    public void testCalculateOperation() throws Exception {
         UUID operationId = UUID.randomUUID();
         Operation existentOperation = operation(ADDITION, OperationStatus.APPROVED);
         existentOperation.setCost(10.0);
@@ -301,6 +276,9 @@ public class OperationServiceTest extends SecurityMock {
         double expectedBalance = loggedUser.getBalance() - existentOperation.getCost();
         when(operationRepository.findByIdNotDeleted(operationId)).thenReturn(Optional.of(existentOperation));
         when(userRepository.findByUsernameAndUserStatus(userDetails.getUsername(), UserStatus.ACTIVE)).thenReturn(Optional.of(loggedUser));
+        CalculatorOperation calculatorOperation = mock(CalculatorOperation.class);
+        when(calculatorOperation.calculate(any())).thenReturn(3.0);
+        when(operationsFactory.getOperation(existentOperation.getType())).thenReturn(calculatorOperation);
         OperationResultDTO operationResult = operationService.calculate(operationId, Map.of(
                 FIRST_NUMBER, 1.0, SECOND_NUMBER, 2.0
         ));

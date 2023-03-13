@@ -1,22 +1,41 @@
 package com.tncalculator.calculatorapi.operations;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static com.tncalculator.calculatorapi.constants.MessageConstants.OPERATION_NOT_IMPLEMENTED;
 import static com.tncalculator.calculatorapi.constants.OperationConstants.*;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Component
 public class OperationsFactory {
 
-    public static CalculatorOperation<?> getOperation(String operationType) {
+    private final AdditionOperation additionOperation;
+    private final SubtractionOperation subtractionOperation;
+    private final MultiplicationOperation multiplicationOperation;
+    private final DivisionOperation divisionOperation;
+    private final SquareRootOperation squareRootOperation;
+    private final RandomStringOperation randomStringOperation;
+
+    @Autowired
+    public OperationsFactory(AdditionOperation additionOperation, SubtractionOperation subtractionOperation,
+                             MultiplicationOperation multiplicationOperation, DivisionOperation divisionOperation,
+                             SquareRootOperation squareRootOperation, RandomStringOperation randomStringOperation) {
+        this.additionOperation = additionOperation;
+        this.subtractionOperation = subtractionOperation;
+        this.multiplicationOperation = multiplicationOperation;
+        this.divisionOperation = divisionOperation;
+        this.squareRootOperation = squareRootOperation;
+        this.randomStringOperation = randomStringOperation;
+    }
+
+    public CalculatorOperation<?> getOperation(String operationType) {
         return switch (operationType) {
-            case ADDITION -> new AdditionOperation();
-            case SUBTRACTION -> new SubtractionOperation();
-            case MULTIPLICATION -> new MultiplicationOperation();
-            case DIVISION -> new DivisionOperation();
-            case SQUARE_ROOT -> new SquareRootOperation();
-            case RANDOM_STRING -> new RandomStringOperation();
+            case ADDITION -> additionOperation;
+            case SUBTRACTION -> subtractionOperation;
+            case MULTIPLICATION -> multiplicationOperation;
+            case DIVISION -> divisionOperation;
+            case SQUARE_ROOT -> squareRootOperation;
+            case RANDOM_STRING -> randomStringOperation;
             default -> throw new IllegalArgumentException(OPERATION_NOT_IMPLEMENTED);
         };
     }

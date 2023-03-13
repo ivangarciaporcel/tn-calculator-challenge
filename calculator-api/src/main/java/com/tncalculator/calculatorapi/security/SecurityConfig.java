@@ -37,6 +37,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
+    private static final String[] AUTH_WHITELIST = {
+            "/login",
+            // -- Swagger UI v2
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+    };
+
     private final UserRepository userRepository;
 
     private final RestExceptionHandler restExceptionHandler;
@@ -131,8 +146,8 @@ public class SecurityConfig {
 
         // Set permissions on endpoints
         http.authorizeHttpRequests(
-                authorize -> authorize.requestMatchers("/login").permitAll()
-                .anyRequest().authenticated()
+                authorize -> authorize.requestMatchers(AUTH_WHITELIST).permitAll()
+                        .anyRequest().authenticated()
         );
         return http.build();
     }
