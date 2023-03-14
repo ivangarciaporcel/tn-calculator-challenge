@@ -18,8 +18,9 @@ import java.util.UUID;
 public class User implements UserDetails, BaseEntity {
 
     public static final String FIELD_USERNAME = "username";
+    public static final String FIELD_EMAIL = "email";
     public static final String FIELD_USER_STATUS = "status";
-    public static final Set<String> FILTER_FIELDS = Set.of(FIELD_USERNAME, FIELD_USER_STATUS);
+    public static final Set<String> FILTER_FIELDS = Set.of(FIELD_EMAIL, FIELD_USER_STATUS);
 
     @Id
     @Column(name = "user_id")

@@ -19,7 +19,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.tncalculator.calculatorapi.constants.MessageConstants.*;
@@ -84,10 +87,10 @@ public class UserService extends BaseRestService<User, UserDTO, UserPartialDTO> 
         checkArgument(FILTER_FIELDS.containsAll(fieldsToFilter), INVALID_USER_FILTERS);
 
         if (fieldsToFilter.containsAll(FILTER_FIELDS)) {
-            return userRepository.listByUsernameAndStatusNotDeleted(filters.get(FIELD_USERNAME),
+            return userRepository.listByUsernameAndStatusNotDeleted(filters.get(FIELD_EMAIL),
                     valueOf(UserStatus.class, filters.get(FIELD_USER_STATUS)), pageable);
-        } else if (fieldsToFilter.contains(FIELD_USERNAME)) {
-            return userRepository.listByUsernameNotDeleted(filters.get(FIELD_USERNAME), pageable);
+        } else if (fieldsToFilter.contains(FIELD_EMAIL)) {
+            return userRepository.listByUsernameNotDeleted(filters.get(FIELD_EMAIL), pageable);
         } else { // it only contains FIELD_USER_STATUS
             return userRepository.listByUserStatusNotDeleted(valueOf(UserStatus.class, filters.get(FIELD_USER_STATUS)), pageable);
         }

@@ -126,7 +126,7 @@ public class ListRecordIntegrationTest extends BaseIntegrationTest {
         createRecord(operation, user);
         createRecord(operation, user);
 
-        URI uri = new URI(String.format(url + "?sort=user.id,asc&sort=createdAt,desc"));
+        URI uri = new URI(String.format(url + "?sort=operation.status,asc&sort=operation.type,desc"));
 
         HttpEntity<?> request = new HttpEntity<>(headers);
         ResponseEntity<String> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);

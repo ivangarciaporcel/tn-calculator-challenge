@@ -1,0 +1,531 @@
+{
+	"info": {
+		"_postman_id": "a45c107c-0c2e-48a7-a4a5-9b9238b27fd7",
+		"name": "Calculator-TN",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users?sort=username,asc&sort=createdAt,desc&filter=email,admin",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "username,asc"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc"
+								},
+								{
+									"key": "filter",
+									"value": "email,admin"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user5@tncalculator.com\",\n    \"password\": \"passwordtn\",\n    \"status\": \"ACTIVE\",\n    \"roles\": [\"USER_CALCULATOR\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch user",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"INACTIVE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/f40fa995-71b7-439d-983f-b8a0df9999a9",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"f40fa995-71b7-439d-983f-b8a0df9999a9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user1@tncalculator.com\",\n    \"password\": \"password\",\n    \"status\": \"ACTIVE\",\n    \"roles\": [\"USER_CALCULATOR\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/fe6b3587-0173-4690-b114-423328ef61aa",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"fe6b3587-0173-4690-b114-423328ef61aa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user1@tn.com\",\n    \"password\": \"password\",\n    \"status\": \"ACTIVE\",\n    \"roles\": [\"USER_CALCULATOR\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/7a88c4ad-a6f5-49e8-86fb-0d5ab6609c06",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"7a88c4ad-a6f5-49e8-86fb-0d5ab6609c06"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user1@tn.com\",\n    \"password\": \"password\",\n    \"status\": \"ACTIVE\",\n    \"roles\": [\"USER_CALCULATOR\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/7a88c4ad-a6f5-49e8-86fb-0d5ab6609c06",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"7a88c4ad-a6f5-49e8-86fb-0d5ab6609c06"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get current user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user1@tn.com\",\n    \"password\": \"password\",\n    \"status\": \"ACTIVE\",\n    \"roles\": [\"USER_CALCULATOR\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/current",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"current"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Operations",
+			"item": [
+				{
+					"name": "Create Operation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"NEW_OPERATION\",\n    \"cost\": \"1.0\",\n    \"status\": \"IN_VERIFICATION\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/operations",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"operations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Perform operation calculation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"parameters\": {\n        \"first_number\": 1.0,\n        \"second_number\": 2.4\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/operations/cf25c1c8-30c8-4675-90c6-9175d45ef33c/calculate",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"operations",
+								"cf25c1c8-30c8-4675-90c6-9175d45ef33c",
+								"calculate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Operations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/operations?filter=type,ADD&sort=type,desc",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"operations"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "type,ADD"
+								},
+								{
+									"key": "sort",
+									"value": "type,desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Operation",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/operations/63dbd51c-8f61-43c0-925c-226d586e8091",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"operations",
+								"63dbd51c-8f61-43c0-925c-226d586e8091"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Operation by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/operations/63dbd51c-8f61-43c0-925c-226d586e8091",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"operations",
+								"63dbd51c-8f61-43c0-925c-226d586e8091"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Operation",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"NEW_OPERATION\",\n    \"cost\": 3.0,\n    \"status\": \"APPROVED\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/operations/63dbd51c-8f61-43c0-925c-226d586e8091",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"operations",
+								"63dbd51c-8f61-43c0-925c-226d586e8091"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch Operation",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cost\": 5.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/operations/63dbd51c-8f61-43c0-925c-226d586e8091",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"operations",
+								"63dbd51c-8f61-43c0-925c-226d586e8091"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Records",
+			"item": [
+				{
+					"name": "List records for current user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/records?sort=operation.status,asc&size=20&filter=operationResponse,APPROVED",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"records"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "operation.status,asc"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								},
+								{
+									"key": "filter",
+									"value": "operationResponse,APPROVED"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Record By Id and current user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/records/b31b3663-de67-4c09-9d49-16557dcc6d3b",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"records",
+								"b31b3663-de67-4c09-9d49-16557dcc6d3b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete record by id and current user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/records/01d9932a-effb-4bfb-98f8-5369765f113a",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"records",
+								"01d9932a-effb-4bfb-98f8-5369765f113a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var contentLength = JSON.stringify(pm.response.headers); ",
+							"console.log(pm.response.headers.get('Authorization'));",
+							"pm.environment.set('jwtToken', pm.response.headers.get('Authorization'));",
+							"console.log(pm.environment.get(\"jwtToken\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"user5@tncalculator.com\",\n    \"password\": \"passwordtn\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwtToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

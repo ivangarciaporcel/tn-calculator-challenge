@@ -12,8 +12,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -21,7 +22,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageService messageService;
@@ -33,6 +34,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), new Object[]{});
         ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, errorMessage);
@@ -40,6 +42,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleNotExistentEntity(NotFoundException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, errorMessage);
@@ -47,6 +50,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOperationArgumentsException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<Object> handleInvalidOperationArgumentsException(InvalidOperationArgumentsException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
         ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
@@ -54,12 +58,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidRolesException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<Object> handleInvalidRolesException(InvalidRolesException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
         ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
         return buildResponseEntity(apiError);
     }
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), new Object[]{});
         ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
@@ -67,6 +73,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentServiceException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<Object> handleIllegalArgumentServiceException(IllegalArgumentServiceException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
         ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
@@ -74,6 +81,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ForbiddenServiceException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<Object> handleForbiddenServiceException(ForbiddenServiceException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), ex.getArgs());
         ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, errorMessage);
@@ -81,6 +89,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), new Object[]{});
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, errorMessage);
@@ -88,6 +97,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CredentialsExpiredException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Object> handleCredentialsExpiredException(CredentialsExpiredException ex) {
         String errorMessage = getErrorMessage(ex.getMessage(), new Object[]{});
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, errorMessage);
@@ -109,6 +119,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleException(Exception ex) {
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         ex.printStackTrace();

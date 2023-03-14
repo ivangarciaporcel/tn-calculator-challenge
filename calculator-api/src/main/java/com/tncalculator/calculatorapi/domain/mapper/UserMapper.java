@@ -47,7 +47,7 @@ public interface UserMapper extends BaseMapper<User, UserDTO, UserPartialDTO> {
         if (authorities != null) {
             return authorities.stream().map(Role::new).collect(toSet());
         }
-        return new HashSet<>();
+        return null;
     }
 
     @Named("roleToString")
