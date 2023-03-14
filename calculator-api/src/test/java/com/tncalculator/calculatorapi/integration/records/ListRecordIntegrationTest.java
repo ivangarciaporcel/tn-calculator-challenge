@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tncalculator.calculatorapi.configuration.SecurityConfiguration;
 import com.tncalculator.calculatorapi.domain.dto.RecordDTO;
 import com.tncalculator.calculatorapi.domain.model.Operation;
+import com.tncalculator.calculatorapi.domain.model.OperationResponse;
 import com.tncalculator.calculatorapi.domain.model.OperationStatus;
 import com.tncalculator.calculatorapi.domain.model.User;
 import com.tncalculator.calculatorapi.exceptions.ApiError;
@@ -25,7 +26,7 @@ import java.net.URISyntaxException;
 import java.util.Set;
 
 import static com.tncalculator.calculatorapi.configuration.SecurityConfiguration.ADMIN_USER;
-import static com.tncalculator.calculatorapi.constants.MessageConstants.SORT_PROPERTY_NOT_VALID;
+import static com.tncalculator.calculatorapi.constants.MessageConstants.*;
 import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -134,5 +135,147 @@ public class ListRecordIntegrationTest extends BaseIntegrationTest {
 
         Page<RecordDTO> response = getResponseAsPage(result.getBody());
         assertEquals(2, response.getContent().size());
+    }
+
+    @Test
+    public void testGetRecordsWithOperationTypeFilter() throws URISyntaxException, JsonProcessingException {
+        Operation operation1 = createOperation("ADD_OPERATION", OperationStatus.APPROVED);
+        Operation operation2 = createOperation("MULTIPLY_OPERATION", OperationStatus.APPROVED);
+        User user = createUser(ADMIN_USER, Set.of(USER_ADMIN));
+        createRecord(operation1, user);
+        createRecord(operation2, user);
+
+        URI uri = new URI(String.format(url + "?filter=operationType,ADD"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+
+        Page<RecordDTO> response = getResponseAsPage(result.getBody());
+        assertEquals(1, response.getContent().size());
+    }
+
+    @Test
+    public void testGetRecordsWithOperationResponseFilter() throws URISyntaxException, JsonProcessingException {
+        Operation operation1 = createOperation("ADD_OPERATION", OperationStatus.APPROVED);
+        Operation operation2 = createOperation("MULTIPLY_OPERATION", OperationStatus.DEPRECATED);
+        User user = createUser(ADMIN_USER, Set.of(USER_ADMIN));
+        createRecord(operation1, user, OperationResponse.APPROVED);
+        createRecord(operation2, user, OperationResponse.DENIED);
+
+        URI uri = new URI(String.format(url + "?filter=operationResponse,DENIED"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+
+        Page<RecordDTO> response = getResponseAsPage(result.getBody());
+        assertEquals(1, response.getContent().size());
+    }
+
+    @Test
+    public void testGetRecordsWithInvalidOperationResponseFilter() throws URISyntaxException {
+        Operation operation1 = createOperation("ADD_OPERATION", OperationStatus.APPROVED);
+        Operation operation2 = createOperation("MULTIPLY_OPERATION", OperationStatus.DEPRECATED);
+        User user = createUser(ADMIN_USER, Set.of(USER_ADMIN));
+        createRecord(operation1, user, OperationResponse.APPROVED);
+        createRecord(operation2, user, OperationResponse.DENIED);
+
+        String invalidOperationResponse = "non_existent";
+        URI uri = new URI(String.format(url + "?filter=operationResponse,%s", invalidOperationResponse));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(CANNOT_FIND_VALUE_ENUM, new Object[]{invalidOperationResponse, OperationResponse.class.getSimpleName()});
+        assertEquals(expectedMessage, apiError.getMessage());
+    }
+
+    @Test
+    public void testGetRecordsWithOperationTypeAndResponseFilter() throws URISyntaxException, JsonProcessingException {
+        Operation operation1 = createOperation("ADD_OPERATION", OperationStatus.APPROVED);
+        Operation operation2 = createOperation("MULTIPLY_OPERATION", OperationStatus.DEPRECATED);
+        User user = createUser(ADMIN_USER, Set.of(USER_ADMIN));
+        createRecord(operation1, user, OperationResponse.APPROVED);
+        createRecord(operation2, user, OperationResponse.DENIED);
+
+        URI uri = new URI(String.format(url + "?filter=operationType,MULTIPLY&filter=operationResponse,DENIED"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+
+        Page<RecordDTO> response = getResponseAsPage(result.getBody());
+        assertEquals(1, response.getContent().size());
+    }
+
+    @Test
+    public void testGetRecordsWithInvalidFilter() throws URISyntaxException {
+        Operation operation1 = createOperation("ADD_OPERATION", OperationStatus.APPROVED);
+        Operation operation2 = createOperation("MULTIPLY_OPERATION", OperationStatus.DEPRECATED);
+        User user = createUser(ADMIN_USER, Set.of(USER_ADMIN));
+        createRecord(operation1, user, OperationResponse.APPROVED);
+        createRecord(operation2, user, OperationResponse.DENIED);
+
+        URI uri = new URI(String.format(url + "?filter=invalid,anyvalue"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(INVALID_RECORD_FILTERS, new Object[]{});
+        assertEquals(expectedMessage, apiError.getMessage());
+    }
+
+    @Test
+    public void testGetRecordsWithInvalidFilterFormat() throws URISyntaxException {
+        Operation operation1 = createOperation("ADD_OPERATION", OperationStatus.APPROVED);
+        Operation operation2 = createOperation("MULTIPLY_OPERATION", OperationStatus.DEPRECATED);
+        User user = createUser(ADMIN_USER, Set.of(USER_ADMIN));
+        createRecord(operation1, user, OperationResponse.APPROVED);
+        createRecord(operation2, user, OperationResponse.DENIED);
+
+        URI uri = new URI(String.format(url + "?filter=operationType"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(INVALID_FILTER_FORMAT, new Object[]{});
+        assertEquals(expectedMessage, apiError.getMessage());
+    }
+
+    @Test
+    public void testGetRecordsWithInvalidMultiFilterFormat() throws URISyntaxException {
+        Operation operation1 = createOperation("ADD_OPERATION", OperationStatus.APPROVED);
+        Operation operation2 = createOperation("MULTIPLY_OPERATION", OperationStatus.DEPRECATED);
+        User user = createUser(ADMIN_USER, Set.of(USER_ADMIN));
+        createRecord(operation1, user, OperationResponse.APPROVED);
+        createRecord(operation2, user, OperationResponse.DENIED);
+
+        URI uri = new URI(String.format(url + "?filter=operationType,ADD&filter=operationResponse"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(INVALID_FILTER_FORMAT, new Object[]{});
+        assertEquals(expectedMessage, apiError.getMessage());
     }
 }

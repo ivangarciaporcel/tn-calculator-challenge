@@ -17,5 +17,5 @@ public interface ControllerSpecification<T, P> {
 
     void delete(Optional<UUID> id);
 
-    Page<T> list(int page, int size, String[] sort);
+    Page<T> list(int page, int size, String[] sort, String[]filter);
 }

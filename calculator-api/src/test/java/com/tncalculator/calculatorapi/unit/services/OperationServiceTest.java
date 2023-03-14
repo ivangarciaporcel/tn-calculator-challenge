@@ -23,10 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tncalculator.calculatorapi.constants.OperationConstants.*;
 import static com.tncalculator.calculatorapi.domain.model.OperationResponse.APPROVED;
@@ -191,7 +188,7 @@ public class OperationServiceTest extends SecurityMock {
         Page<Operation> result = Page.empty();
         when(operationRepository.listNotDeleted(pageable)).thenReturn(result);
 
-        Page<Operation> pagedList = operationService.list(pageable);
+        Page<Operation> pagedList = operationService.list(pageable, Map.of());
         assertTrue(pagedList.isEmpty());
         verify(operationRepository, times(1)).listNotDeleted(pageable);
     }

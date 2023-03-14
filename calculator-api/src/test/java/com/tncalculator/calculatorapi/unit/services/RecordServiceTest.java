@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -121,7 +122,7 @@ public class RecordServiceTest extends SecurityMock {
 
         when(userRepository.findByUsernameAndUserStatus(userDetails.getUsername(), UserStatus.ACTIVE)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class,
-                () -> recordService.listByCurrentUser(pageable));
+                () -> recordService.listByCurrentUser(pageable, Map.of()));
     }
 
     @Test
@@ -132,7 +133,7 @@ public class RecordServiceTest extends SecurityMock {
 
         when(userRepository.findByUsernameAndUserStatus(userDetails.getUsername(), UserStatus.ACTIVE)).thenReturn(Optional.of(loggedUser));
         when(recordRepository.listByUser(loggedUser.getId(), pageable)).thenReturn(result);
-        Page<Record> pagedList = recordService.listByCurrentUser(pageable);
+        Page<Record> pagedList = recordService.listByCurrentUser(pageable, Map.of());
         assertTrue(pagedList.isEmpty());
         verify(recordRepository, times(1)).listByUser(loggedUser.getId(), pageable);
     }

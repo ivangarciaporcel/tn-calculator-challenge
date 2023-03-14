@@ -11,8 +11,7 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.tncalculator.calculatorapi.constants.MessageConstants.ID_NOT_NULL;
-import static com.tncalculator.calculatorapi.utils.PageUtils.AUDIT_SORT_FIELDS;
-import static com.tncalculator.calculatorapi.utils.PageUtils.getSortOrders;
+import static com.tncalculator.calculatorapi.utils.PageUtils.*;
 
 public abstract class BaseController<E, T, P> implements ControllerSpecification<T, P> {
 
@@ -55,10 +54,10 @@ public abstract class BaseController<E, T, P> implements ControllerSpecification
     }
 
     @SneakyThrows
-    public Page<T> list(int page, int size, String[] sort) {
+    public Page<T> list(int page, int size, String[] sort, String[] filter) {
         List<Sort.Order> orders = getSortOrders(sort, AUDIT_SORT_FIELDS);
         Pageable pagination = PageRequest.of(page, size, Sort.by(orders));
-        Page<E> paged = baseService.list(pagination);
+        Page<E> paged = baseService.list(pagination, getFilters(filter));
         return new PageImpl<>(mapper.entitiesToDTOs(paged.getContent()), paged.getPageable(), paged.getContent().size());
     }
 }

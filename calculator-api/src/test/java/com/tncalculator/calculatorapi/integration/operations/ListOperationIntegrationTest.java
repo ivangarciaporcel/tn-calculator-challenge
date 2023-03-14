@@ -23,7 +23,7 @@ import java.net.URISyntaxException;
 import java.util.UUID;
 
 import static com.tncalculator.calculatorapi.configuration.SecurityConfiguration.ADMIN_USER;
-import static com.tncalculator.calculatorapi.constants.MessageConstants.SORT_PROPERTY_NOT_VALID;
+import static com.tncalculator.calculatorapi.constants.MessageConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -121,6 +121,127 @@ public class ListOperationIntegrationTest extends BaseIntegrationTest {
 
         Page<OperationDTO> response = getResponseAsPage(result.getBody());
         assertEquals(2, response.getContent().size());
+    }
+
+    @Test
+    public void testGetOperationsWithTypeFilter() throws URISyntaxException, JsonProcessingException {
+        createOperation("addition_operation", OperationStatus.APPROVED);
+        createOperation("subtraction_operation", OperationStatus.IN_VERIFICATION);
+
+        URI uri = new URI(String.format(url + "?filter=type,addition"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+
+        Page<OperationDTO> response = getResponseAsPage(result.getBody());
+        assertEquals(1, response.getContent().size());
+    }
+
+    @Test
+    public void testGetOperationsWithStatusFilter() throws URISyntaxException, JsonProcessingException {
+        createOperation("addition_operation", OperationStatus.APPROVED);
+        createOperation("subtraction_operation", OperationStatus.IN_VERIFICATION);
+
+        URI uri = new URI(String.format(url + "?filter=status,in_verification"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+
+        Page<OperationDTO> response = getResponseAsPage(result.getBody());
+        assertEquals(1, response.getContent().size());
+    }
+
+    @Test
+    public void testGetOperationsWithInvalidStatusFilter() throws URISyntaxException, JsonProcessingException {
+        createOperation("addition_operation", OperationStatus.APPROVED);
+        createOperation("subtraction_operation", OperationStatus.IN_VERIFICATION);
+
+        String invalidOperationStatus = "non_existent";
+        URI uri = new URI(String.format(url + "?filter=status,%s", invalidOperationStatus));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(CANNOT_FIND_VALUE_ENUM, new Object[]{invalidOperationStatus, OperationStatus.class.getSimpleName()});
+        assertEquals(expectedMessage, apiError.getMessage());
+    }
+
+    @Test
+    public void testGetOperationsWithTypeAndStatusFilter() throws URISyntaxException, JsonProcessingException {
+        createOperation("addition_operation", OperationStatus.APPROVED);
+        createOperation("subtraction_operation", OperationStatus.IN_VERIFICATION);
+
+        URI uri = new URI(String.format(url + "?filter=type,operation&filter=status,in_verification"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+
+        Page<OperationDTO> response = getResponseAsPage(result.getBody());
+        assertEquals(1, response.getContent().size());
+    }
+
+    @Test
+    public void testGetOperationsWithInvalidFilter() throws URISyntaxException {
+        createOperation("addition_operation", OperationStatus.APPROVED);
+        createOperation("subtraction_operation", OperationStatus.IN_VERIFICATION);
+
+        URI uri = new URI(String.format(url + "?filter=invalid,in_verification"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(INVALID_OPERATION_FILTERS, new Object[]{});
+        assertEquals(expectedMessage, apiError.getMessage());
+    }
+
+    @Test
+    public void testGetOperationsWithInvalidFilterFormat() throws URISyntaxException {
+        createOperation("addition_operation", OperationStatus.APPROVED);
+        createOperation("subtraction_operation", OperationStatus.IN_VERIFICATION);
+
+        URI uri = new URI(String.format(url + "?filter=type"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(INVALID_FILTER_FORMAT, new Object[]{});
+        assertEquals(expectedMessage, apiError.getMessage());
+    }
+
+    @Test
+    public void testGetOperationsWithInvalidMultiFilterFormat() throws URISyntaxException {
+        createOperation("addition_operation", OperationStatus.APPROVED);
+        createOperation("subtraction_operation", OperationStatus.IN_VERIFICATION);
+
+        URI uri = new URI(String.format(url + "?filter=type,operation&filter=status"));
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<ApiError> result = this.restTemplate.exchange(uri, HttpMethod.GET, request, ApiError.class);
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), result.getStatusCode().value());
+
+        ApiError apiError = result.getBody();
+        assertNotNull(apiError);
+        String expectedMessage = messageService.getMessage(INVALID_FILTER_FORMAT, new Object[]{});
+        assertEquals(expectedMessage, apiError.getMessage());
     }
 
 }

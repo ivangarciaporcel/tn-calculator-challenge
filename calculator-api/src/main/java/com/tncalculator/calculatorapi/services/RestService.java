@@ -6,6 +6,8 @@ import com.tncalculator.calculatorapi.exceptions.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Map;
+
 public interface RestService<E, P, I> {
 
     E create(E e);
@@ -18,5 +20,5 @@ public interface RestService<E, P, I> {
 
     void delete(I id) throws NotFoundException, ForbiddenServiceException;
 
-    Page<E> list(Pageable pageable);
+    Page<E> list(Pageable pageable, Map<String, String> filters);
 }

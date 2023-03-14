@@ -25,6 +25,7 @@ import static com.tncalculator.calculatorapi.constants.MessageConstants.CURRENT_
 import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
 import static com.tncalculator.calculatorapi.domain.model.User.FIELD_USERNAME;
 import static com.tncalculator.calculatorapi.security.SecurityUtils.getAuthUserDetails;
+import static com.tncalculator.calculatorapi.utils.PageUtils.getFilters;
 import static com.tncalculator.calculatorapi.utils.PageUtils.getSortOrders;
 
 @RestController
@@ -88,10 +89,11 @@ public class UserController extends BaseController<User, UserDTO, UserPartialDTO
     @Override
     public Page<UserDTO> list(@RequestParam(value = "page", defaultValue = "0") int page,
                               @RequestParam(value = "size", defaultValue = "10") int size,
-                              @RequestParam(defaultValue = "username,asc") String[] sort) {
+                              @RequestParam(defaultValue = "username,asc") String[] sort,
+                              @RequestParam(defaultValue = "") String[] filter) {
         List<Sort.Order> orders = getSortOrders(sort, List.of(FIELD_USERNAME, CREATED_AT, UPDATED_AT));
         Pageable pagination = PageRequest.of(page, size, Sort.by(orders));
-        Page<User> paged = userService.list(pagination);
+        Page<User> paged = userService.list(pagination, getFilters(filter));
         return new PageImpl<>(mapper.entitiesToDTOs(paged.getContent()), paged.getPageable(), paged.getContent().size());
     }
 

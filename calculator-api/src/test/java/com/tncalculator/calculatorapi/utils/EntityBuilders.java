@@ -52,4 +52,14 @@ public class EntityBuilders {
         return record;
     }
 
+    public static Record record(Operation operation, User user, OperationResponse operationResponse) {
+        Record record = new Record();
+        record.setOperation(operation);
+        record.setUser(user);
+        record.setAmount(100.0);
+        record.setUserBalance(20.0);
+        record.setOperationResponse(operationResponse);
+        return record;
+    }
+
 }

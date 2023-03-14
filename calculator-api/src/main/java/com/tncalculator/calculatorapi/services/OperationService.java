@@ -16,15 +16,21 @@ import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.tncalculator.calculatorapi.constants.MessageConstants.*;
+import static com.tncalculator.calculatorapi.domain.model.Operation.*;
 import static com.tncalculator.calculatorapi.security.SecurityUtils.getAuthUserDetails;
+import static com.tncalculator.calculatorapi.utils.EnumUtils.valueOf;
 
 @Log4j2
 @Service
@@ -45,6 +51,25 @@ public class OperationService extends BaseRestService<Operation, OperationDTO, O
         this.recordRepository = recordRepository;
         this.userRepository = userRepository;
         this.operationsFactory = operationsFactory;
+    }
+
+    @SneakyThrows
+    @Override
+    public Page<Operation> list(Pageable pageable, Map<String, String> filters) {
+        if (filters.isEmpty()) {
+            return operationRepository.listNotDeleted(pageable);
+        }
+        Set<String> fieldsToFilter = filters.keySet();
+        checkArgument(FILTER_FIELDS.containsAll(fieldsToFilter), INVALID_OPERATION_FILTERS);
+
+        if (fieldsToFilter.containsAll(FILTER_FIELDS)) {
+            return operationRepository.listByTypeAndStatusNotDeleted(filters.get(FIELD_TYPE),
+                    valueOf(OperationStatus.class, filters.get(FIELD_OPERATION_STATUS)), pageable);
+        } else if (fieldsToFilter.contains(FIELD_TYPE)) {
+            return operationRepository.listByTypeNotDeleted(filters.get(FIELD_TYPE), pageable);
+        } else { // it only contains FIELD_OPERATION_STATUS
+            return operationRepository.listByStatusNotDeleted(valueOf(OperationStatus.class, filters.get(FIELD_OPERATION_STATUS)), pageable);
+        }
     }
 
     @Override

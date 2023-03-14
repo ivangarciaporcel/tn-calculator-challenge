@@ -10,11 +10,13 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.tncalculator.calculatorapi.constants.MessageConstants.ID_NOT_FOUND;
-import static com.tncalculator.calculatorapi.constants.MessageConstants.ID_NOT_NULL;
+import static com.tncalculator.calculatorapi.constants.MessageConstants.*;
 
 public abstract class BaseRestService<E extends BaseEntity, T, P> implements RestService<E, P, UUID> {
 
@@ -59,18 +61,31 @@ public abstract class BaseRestService<E extends BaseEntity, T, P> implements Res
         repository.save(entity);
     }
 
-    public Page<E> list(Pageable pageable) {
+    public Page<E> list(Pageable pageable, Map<String, String> filters) {
         return repository.listNotDeleted(pageable);
     }
 
     protected E getById(UUID id) throws NotFoundException {
-        checkArgument(id!=null, ID_NOT_NULL);
+        checkArgument(id != null, ID_NOT_NULL);
         return repository.findByIdNotDeleted(id).orElseThrow(
                 () -> new NotFoundException(ID_NOT_FOUND, new Object[]{entityClass.getSimpleName(), id.toString()}));
     }
 
     protected abstract void validateCreate(E e);
+
     protected abstract void validateUpdate(E e, E existentEntity);
+
     protected abstract void validatePatch(E existentEntity, P partial);
+
     protected abstract void validateDelete(E e);
+
+    protected Map<String, String> parseFilters(List<String> filters) {
+        Map<String, String> filterMap = new HashMap<>();
+        filters.forEach(filter -> {
+            String[] pair = filter.split(",");
+            checkArgument(pair.length == 2, INVALID_FILTER_FORMAT);
+            filterMap.put(pair[0], pair[1]);
+        });
+        return filterMap;
+    }
 }

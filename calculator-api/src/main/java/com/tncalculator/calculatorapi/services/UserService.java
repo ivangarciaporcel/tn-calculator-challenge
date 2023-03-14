@@ -13,16 +13,19 @@ import com.tncalculator.calculatorapi.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.tncalculator.calculatorapi.constants.MessageConstants.*;
+import static com.tncalculator.calculatorapi.domain.model.User.*;
 import static com.tncalculator.calculatorapi.security.SecurityUtils.getAuthUserDetails;
+import static com.tncalculator.calculatorapi.utils.EnumUtils.valueOf;
 
 @Service
 public class UserService extends BaseRestService<User, UserDTO, UserPartialDTO> {
@@ -69,6 +72,25 @@ public class UserService extends BaseRestService<User, UserDTO, UserPartialDTO> 
         userMapper.patch(partial, entity);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         return userRepository.save(entity);
+    }
+
+    @SneakyThrows
+    @Override
+    public Page<User> list(Pageable pageable, Map<String, String> filters) {
+        if (filters.isEmpty()) {
+            return userRepository.listNotDeleted(pageable);
+        }
+        Set<String> fieldsToFilter = filters.keySet();
+        checkArgument(FILTER_FIELDS.containsAll(fieldsToFilter), INVALID_USER_FILTERS);
+
+        if (fieldsToFilter.containsAll(FILTER_FIELDS)) {
+            return userRepository.listByUsernameAndStatusNotDeleted(filters.get(FIELD_USERNAME),
+                    valueOf(UserStatus.class, filters.get(FIELD_USER_STATUS)), pageable);
+        } else if (fieldsToFilter.contains(FIELD_USERNAME)) {
+            return userRepository.listByUsernameNotDeleted(filters.get(FIELD_USERNAME), pageable);
+        } else { // it only contains FIELD_USER_STATUS
+            return userRepository.listByUserStatusNotDeleted(valueOf(UserStatus.class, filters.get(FIELD_USER_STATUS)), pageable);
+        }
     }
 
     @SneakyThrows

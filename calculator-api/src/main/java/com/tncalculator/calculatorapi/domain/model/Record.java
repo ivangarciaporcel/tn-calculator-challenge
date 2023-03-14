@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -16,6 +17,10 @@ public class Record implements BaseEntity {
 
     public static final String FIELD_USER_ID = "user.id";
     public static final String FIELD_OPERATION_ID = "operation.id";
+    public static final String FIELD_OPERATION_TYPE = "operationType";
+    public static final String FIELD_OPERATION_RESPONSE = "operationResponse";
+
+    public static final Set<String> FILTER_FIELDS = Set.of(FIELD_OPERATION_TYPE, FIELD_OPERATION_RESPONSE);
     @Id
     @Column(name = "id")
     @GeneratedValue

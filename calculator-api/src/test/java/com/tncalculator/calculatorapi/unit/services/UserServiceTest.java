@@ -19,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
 import static com.tncalculator.calculatorapi.utils.AssertionUtils.assertUser;
@@ -198,7 +196,7 @@ public class UserServiceTest extends SecurityMock {
         Page<User> result = Page.empty();
         when(userRepository.listNotDeleted(pageable)).thenReturn(result);
 
-        Page<User> pagedList = userService.list(pageable);
+        Page<User> pagedList = userService.list(pageable, Map.of());
         assertTrue(pagedList.isEmpty());
         verify(userRepository, times(1)).listNotDeleted(pageable);
     }

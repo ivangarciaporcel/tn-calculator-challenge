@@ -27,6 +27,7 @@ import static com.tncalculator.calculatorapi.constants.MessageConstants.ID_NOT_N
 import static com.tncalculator.calculatorapi.constants.MessageConstants.USER_BALANCE_NOT_ENOUGH_OPERATION;
 import static com.tncalculator.calculatorapi.domain.model.Operation.FIELD_TYPE;
 import static com.tncalculator.calculatorapi.domain.model.Role.USER_ADMIN;
+import static com.tncalculator.calculatorapi.utils.PageUtils.getFilters;
 import static com.tncalculator.calculatorapi.utils.PageUtils.getSortOrders;
 
 @RestController
@@ -87,10 +88,11 @@ public class OperationController extends BaseController<Operation, OperationDTO,
     @Override
     public Page<OperationDTO> list(@RequestParam(value = "page", defaultValue = "0") int page,
                                    @RequestParam(value = "size", defaultValue = "10") int size,
-                                   @RequestParam(defaultValue = "type,asc") String[] sort) {
+                                   @RequestParam(defaultValue = "type,asc") String[] sort,
+                                   @RequestParam(defaultValue = "") String[] filter) {
         List<Sort.Order> orders = getSortOrders(sort, List.of(FIELD_TYPE, CREATED_AT, UPDATED_AT));
         Pageable pagination = PageRequest.of(page, size, Sort.by(orders));
-        Page<Operation> paged = operationService.list(pagination);
+        Page<Operation> paged = operationService.list(pagination, getFilters(filter));
         return new PageImpl<>(mapper.entitiesToDTOs(paged.getContent()), paged.getPageable(), paged.getContent().size());
     }
 

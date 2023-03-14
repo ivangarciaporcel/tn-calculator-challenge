@@ -9,6 +9,7 @@ import com.tncalculator.calculatorapi.configuration.UserConfigurationProperties;
 import com.tncalculator.calculatorapi.domain.mapper.OperationMapper;
 import com.tncalculator.calculatorapi.domain.mapper.UserMapper;
 import com.tncalculator.calculatorapi.domain.model.Operation;
+import com.tncalculator.calculatorapi.domain.model.OperationResponse;
 import com.tncalculator.calculatorapi.domain.model.OperationStatus;
 import com.tncalculator.calculatorapi.domain.model.Record;
 import com.tncalculator.calculatorapi.repository.OperationRepository;
@@ -157,6 +158,10 @@ public abstract class BaseIntegrationTest {
 
     protected Record createRecord(Operation operation, com.tncalculator.calculatorapi.domain.model.User user) {
         return recordRepository.save(record(operation, user));
+    }
+
+    protected Record createRecord(Operation operation, com.tncalculator.calculatorapi.domain.model.User user, OperationResponse operationResponse) {
+        return recordRepository.save(record(operation, user, operationResponse));
     }
 
 }

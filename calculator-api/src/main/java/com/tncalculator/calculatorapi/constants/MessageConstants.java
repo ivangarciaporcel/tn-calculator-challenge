@@ -6,12 +6,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageConstants {
 
+    public static final String CANNOT_FIND_VALUE_ENUM = "cannot.find.value.enum";
     public static final String CURRENT_USER_NOT_FOUND = "current.user.not.found";
     public static final String DENOMINATOR_NOT_ZERO = "denominator.not.zero";
     public static final String EMAIL_NOT_VALID = "email.not.valid";
     public static final String ID_NOT_FOUND = "id.not.found";
     public static final String ID_NOT_NULL = "id.not.null";
     public static final String INVALID_OPERATION_PARAMETERS = "invalid.operation.parameters";
+    public static final String INVALID_FILTER_FORMAT = "invalid.filter.format";
+    public static final String INVALID_USER_FILTERS = "invalid.user.filters";
+    public static final String INVALID_OPERATION_FILTERS = "invalid.operation.filters";
+    public static final String INVALID_RECORD_FILTERS = "invalid.record.filters";
     public static final String NEW_OPERATION_SHOULD_BE_IN_VERIFICATION = "new.operation.should.be.in.verification";
     public static final String OPERATION_DEPRECATED = "operation.deprecated";
     public static final String OPERATION_IN_VERIFICATION = "operation.in.verification";

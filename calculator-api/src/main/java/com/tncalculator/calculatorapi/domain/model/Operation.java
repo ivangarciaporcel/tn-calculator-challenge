@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -15,6 +16,8 @@ import java.util.UUID;
 public class Operation implements BaseEntity{
 
     public static final String FIELD_TYPE = "type";
+    public static final String FIELD_OPERATION_STATUS = "status";
+    public static final Set<String> FILTER_FIELDS = Set.of(FIELD_TYPE, FIELD_OPERATION_STATUS);
 
     @Id
     @Column(name = "id")
